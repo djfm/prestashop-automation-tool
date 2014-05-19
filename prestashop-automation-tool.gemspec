@@ -7,9 +7,11 @@ Gem::Specification.new do |s|
 	s.authors = ["François-Marie de Jouvencel"]
 	s.email = 'fm.de.jouvencel@gmail.com'
 	s.files = Dir.glob("{lib,spec}/**/*")
+	s.require_paths = ["lib"]
 	s.homepage = 'https://github.com/djfm/prestashop-automation-tool'
 	s.license = 'OSL'
 	s.add_runtime_dependency 'prestashop-automation'
 	s.add_runtime_dependency 'apache-vhosts-parser'
 	s.executables << 'pat.rb'
+	s.executables << 'pat-runner-invoice.rb'
 end

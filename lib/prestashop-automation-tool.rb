@@ -93,10 +93,10 @@ module PrestaShopAutomationTool
 			end
 
 			if @admin_folder
-				@config[:back_office_url] = URI.join(@config[:front_office_url], @admin_folder).to_s
+				@config[:back_office_url] = URI.join(@config[:front_office_url], @admin_folder, '/').to_s
 			end
 			if @installer_folder
-				@config[:installer_url] = URI.join(@config[:front_office_url], @installer_folder).to_s
+				@config[:installer_url] = URI.join(@config[:front_office_url], @installer_folder, '/').to_s
 			end
 		end
 	end
