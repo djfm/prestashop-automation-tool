@@ -1,8 +1,16 @@
 #!/usr/bin/ruby
-require_relative '../lib/prestashop-automation-tool.rb'
+require '../lib/prestashop-automation-tool.rb'
 
 require 'optparse'
 require 'json'
+
+def withConfig &block
+	if File.exists? 'pat.conf.json'
+		yield JSON.parse(File.read('pat.conf.json'), :symbolize_names => true)
+	else
+		abort "Could not find the config file #{pat.conf.json}, did you run 'pat.rb init'?"
+	end
+end
 
 options = {}
 OptionParser.new do |opts|
@@ -10,7 +18,6 @@ OptionParser.new do |opts|
 		options[:accept_defaults] = true
 	end
 end.parse!
-
 if ARGV.count != 1
 	puts "Missing action argument!"
 	exit 1
@@ -22,4 +29,10 @@ elsif ARGV[0] == 'init'
 	File.write 'pat.conf.json', JSON.pretty_generate({
 		shop: conf.config
 	})
+elsif ARGV[0] == 'install'
+	withConfig do |conf|
+		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
+		ps.drop_database
+		ps.install options
+	end
 end

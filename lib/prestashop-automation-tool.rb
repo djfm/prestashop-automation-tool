@@ -1,4 +1,6 @@
 require 'uri'
+require 'apache-vhosts-parser'
+require 'prestashop-automation'
 
 module PrestaShopAutomationTool
 	class ConfigurationParser
@@ -6,7 +8,15 @@ module PrestaShopAutomationTool
 		attr_reader :config
 
 		def initialize root
-			@root = root
+			@root = File.realpath(root)
+
+			vhosts = ApacheVhostsParser.parseDirectory
+
+			if url = vhosts.urlFor(@root)
+				fou = "http://#{url}/"
+			else
+				fou = "http://localhost/#{File.basename(@root)}"
+			end
 
 			@config_fields = {
 				database_user: '',
@@ -15,7 +25,7 @@ module PrestaShopAutomationTool
 				database_prefix: 'ps_',
 				database_host: 'localhost',
 				version: '',
-				front_office_url: "http://localhost/#{File.basename(File.realpath('.'))}/",
+				front_office_url: fou,
 				back_office_url: nil,
 				installer_url: nil,
 				admin_email: 'pub@prestashop.com',
