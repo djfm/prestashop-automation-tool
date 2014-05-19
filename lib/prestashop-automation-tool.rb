@@ -15,7 +15,7 @@ module PrestaShopAutomationTool
 			if url = vhosts.urlFor(@root)
 				fou = "http://#{url}/"
 			else
-				fou = "http://localhost/#{File.basename(@root)}"
+				fou = "http://localhost/#{File.basename(@root)}/"
 			end
 
 			@config_fields = {
