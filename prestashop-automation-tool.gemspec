@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
 	s.name = 'prestashop-automation-tool'
-	s.version = '0.1'
+	s.version = '0.3'
 	s.date = '2014-05-19'
 	s.description = "Automate prestashop."
 	s.summary = 'This tool helps you add selenium tests to an existing prestashop installation.'
@@ -9,5 +9,7 @@ Gem::Specification.new do |s|
 	s.files = Dir.glob("{lib,spec}/**/*")
 	s.homepage = 'https://github.com/djfm/prestashop-automation-tool'
 	s.license = 'OSL'
+	s.add_runtime_dependency 'prestashop-automation'
+	s.add_runtime_dependency 'apache-vhosts-parser'
 	s.executables << 'pat.rb'
 end

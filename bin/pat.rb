@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-require '../lib/prestashop-automation-tool.rb'
+require 'prestashop-automation-tool'
 
 require 'optparse'
 require 'json'
