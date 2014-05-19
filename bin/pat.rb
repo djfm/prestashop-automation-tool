@@ -14,8 +14,11 @@ end
 
 options = {}
 OptionParser.new do |opts|
-	opts.on('-ad', '--accept-defaults', 'Accept default values automatically') do
+	opts.on('-ad', '--accept-defaults', 'Accept default values automatically.') do
 		options[:accept_defaults] = true
+	end
+	opts.on('--no-restore', 'Do not save/restore intial state when running tests.') do
+		options[:no_restore] = true
 	end
 end.parse!
 if ARGV.count == 0
@@ -38,7 +41,17 @@ elsif ARGV[0] == 'install'
 		ps.drop_database
 		ps.install options
 	end
-elsif ARGV[0] == 'run'
+elsif ARGV[0] == 'dump'
+	withConfig do |conf|
+		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
+		ps.dump_database 'dump.sql'
+	end
+elsif ARGV[0] == 'restore'
+	withConfig do |conf|
+		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
+		ps.load_database 'dump.sql'
+	end
+elsif ARGV[0] == 'test'
 
 	list = ARGV[1..-1]
 
@@ -46,13 +59,24 @@ elsif ARGV[0] == 'run'
 		list = Dir.glob('pat-tests/**/*')
 	end
 
+	list.sort!
+
 	list.each do |file|
-		if file =~ /\.rb$/
-			exec 'rspec', file
+		ok = if file =~ /\.rb$/
+			puts "Running #{file}..."
+			system({'NO_RESTORE' => options[:no_restore]}, 'rspec', file)
 		elsif file =~ /\.json$/
+			puts "Running #{file}..."
 			data = JSON.parse File.read(file)
 			runner = "pat-runner-#{data['spec']['runner']}.rb"
-			exec({'PAT_SOURCE' => file}, runner)
+			system({'PAT_SOURCE' => file, 'NO_RESTORE' => (options[:no_restore] ? '1' : '0')}, runner)
+		else
+			:not_runnable
 		end
+
+		if ok != :not_runnable
+			puts "Ran #{file}: #{ok ? "success!" : "FAILED"}"
+		end
+
 	end
 end

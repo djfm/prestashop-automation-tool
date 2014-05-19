@@ -31,6 +31,12 @@ def test_invoice ps, scenario, options={}
 	ps.set_rounding_rule scenario['meta']['rounding_rule']
 	ps.set_rounding_method scenario['meta']['rounding_method']
 
+	if scenario['meta']['ecotax']
+		ps.set_ecotax_option true, ps.create_tax_group_from_rate(scenario['meta']['ecotax'], taxes, groups)
+	else
+		ps.set_ecotax_option false
+	end
+
 	carrier_name = ps.create_carrier({
 		:name => scenario['carrier']['name'],
 		:with_handling_fees => scenario['carrier']['with_handling_fees'],
@@ -45,6 +51,7 @@ def test_invoice ps, scenario, options={}
 			:name => name,
 			:price => data['price'],
 			:tax_group_id => ps.create_tax_group_from_rate(data['vat'], taxes, groups),
+			:ecotax => data['ecotax'],
 			:specific_price => data['specific_price']
 		})
 		products << {id: id, quantity: data['quantity']}
