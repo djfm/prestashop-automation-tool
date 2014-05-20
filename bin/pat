@@ -91,4 +91,18 @@ elsif ARGV[0] == 'test'
 		end
 
 	end
+elsif ARGV[0] == 'enable'
+	if ARGV[1]
+		`cp tests-available/#{ARGV[1]}.* tests-enabled/`
+	else
+		puts "Please also provide prefix!"
+	end
+elsif ARGV[0] == 'disable'
+	if ARGV[1]
+		`mv tests-enabled/#{ARGV[1]}.* tests-available/`
+	else
+		puts "Please also provide prefix!"
+	end
+else
+	puts "Unknown command '#{ARGV[0]}'!"
 end
