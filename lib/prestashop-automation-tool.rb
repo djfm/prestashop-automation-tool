@@ -3,6 +3,11 @@ require 'apache-vhosts-parser'
 require 'prestashop-automation'
 
 module PrestaShopAutomationTool
+
+	def self.gem_root
+		File.expand_path '../..', __FILE__
+	end
+
 	class ConfigurationParser
 
 		attr_reader :config
@@ -31,7 +36,8 @@ module PrestaShopAutomationTool
 				admin_email: 'pub@prestashop.com',
 				admin_password: '123456789',
 				default_customer_email: 'pub@prestashop.com',
-				default_customer_password: '123456789'
+				default_customer_password: '123456789',
+				tests_repository: 'https://github.com/djfm/prestashop-automation-tool-tests'
 			}
 
 			@config = {}

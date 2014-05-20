@@ -32,14 +32,41 @@ elsif ARGV[0] == 'init'
 	File.write 'pat.conf.json', JSON.pretty_generate({
 		shop: conf.config
 	})
-	unless File.exists? 'pat-tests'
-		Dir.mkdir 'pat-tests'
+	unless File.exists? 'tests-enabled'
+		Dir.mkdir 'tests-enabled'
 	end
+	unless File.exists? 'tests-available'
+		`git clone #{conf.config[:tests_repository]} tests-available`
+	end
+elsif ARGV[0] == 'purge'
+	`rm -Rf pat.conf.json tests-enabled tests-available`
 elsif ARGV[0] == 'install'
 	withConfig do |conf|
 		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
 		ps.drop_database
 		ps.install options
+	end
+elsif ARGV[0] == 'create'
+	if ARGV[1]
+		template = File.join PrestaShopAutomationTool.gem_root, 'lib', 'templates', 'sample_test.rb'
+		`cp #{template} tests-enabled/#{ARGV[1]}.rb`
+	else
+		puts 'Please provide the name of the test to create!'
+	end
+elsif ARGV[0] == 'publish'
+	if ARGV[1]
+		target = if (subpath = ARGV[1][/^tests-enabled\/(.*?)$/, 1])
+			"tests-available/#{subpath}"
+		else
+			"tests-available/#{File.basename ARGV[1]}"
+		end
+		`cp #{ARGV[1]} #{target}`
+		Dir.chdir 'tests-available'
+		`git add #{target[/^tests-available\/(.*?)$/, 1]}`
+		`git commit -m"#{ARGV[2] || '// edited test'}"`
+		`git push`
+	else
+		puts 'Please provide the relative path to the test!'
 	end
 elsif ARGV[0] == 'dump'
 	withConfig do |conf|
@@ -56,7 +83,7 @@ elsif ARGV[0] == 'test'
 	list = ARGV[1..-1]
 
 	if list.nil? or list.empty?
-		list = Dir.glob('pat-tests/**/*')
+		list = Dir.glob('tests-enabled/**/*')
 	end
 
 	list.sort!

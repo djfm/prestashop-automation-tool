@@ -12,6 +12,6 @@ Gem::Specification.new do |s|
 	s.license = 'OSL'
 	s.add_runtime_dependency 'prestashop-automation'
 	s.add_runtime_dependency 'apache-vhosts-parser'
-	s.executables << 'pat.rb'
+	s.executables << 'pat'
 	s.executables << 'pat-runner-invoice.rb'
 end
