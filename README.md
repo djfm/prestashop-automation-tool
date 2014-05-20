@@ -25,6 +25,8 @@ sudo gem install prestashop-automation-tool
 
 #Usage
 
+##First Steps
+
 Browse to a local PrestaShop installation:
 ```bash
 cd /var/www/prestashop
@@ -48,3 +50,21 @@ pat test
 ```
 
 The test command will run all tests under `tests-enabled`, but you can specify a specific file name to run.
+
+##Creating a New Test
+
+To create a test stub, just run this:
+```bash
+pat create my.test
+```
+
+This will put a new test called `my.test.rb` under `tests-enabled` containing something like:
+```ruby
+require 'prestashop-automation-tool/helper'
+
+describe 'My first test' do
+	it 'should login as a customer' do
+		@shop.login_to_front_office
+	end
+end
+```
