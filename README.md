@@ -68,3 +68,7 @@ describe 'My first test' do
 	end
 end
 ```
+
+Your test script receives automatically a `@shop` variable, which is an instance of [PrestaShopAutomation::PrestaShop](https://github.com/djfm/prestashop-automation/blob/master/lib/prestashop-automation.rb).
+
+Look at the modules under [prestashop-automation/lib/actions](https://github.com/djfm/prestashop-automation/tree/master/lib/actions) to see what you can do with this shop!
