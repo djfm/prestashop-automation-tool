@@ -35,7 +35,7 @@ Initialize the environment:
 pat init
 ```
 
-This will try to guess the parameters needed from your installation files and ask about what's missing. When the small wizard is done you can edit the pat.conf.json file and correct it if necessary.
+This will try to guess the parameters needed from your installation files and ask about what's missing. When the small wizard is done you can edit the `pat.conf.json` file and correct it if necessary.
 
 Enable some tests:
 ```bash
@@ -46,3 +46,5 @@ Run the tests:
 ```bash
 pat test
 ```
+
+The test command will run all tests under `tests-enabled`, but you can specify a specific file name to run.
