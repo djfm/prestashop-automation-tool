@@ -53,21 +53,6 @@ elsif ARGV[0] == 'create'
 	else
 		puts 'Please provide the name of the test to create!'
 	end
-elsif ARGV[0] == 'publish'
-	if ARGV[1]
-		target = if (subpath = ARGV[1][/^tests-enabled\/(.*?)$/, 1])
-			"tests-available/#{subpath}"
-		else
-			"tests-available/#{File.basename ARGV[1]}"
-		end
-		`cp #{ARGV[1]} #{target}`
-		Dir.chdir 'tests-available'
-		`git add #{target[/^tests-available\/(.*?)$/, 1]}`
-		`git commit -m"#{ARGV[2] || '// edited test'}"`
-		`git push`
-	else
-		puts 'Please provide the relative path to the test!'
-	end
 elsif ARGV[0] == 'dump'
 	withConfig do |conf|
 		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
