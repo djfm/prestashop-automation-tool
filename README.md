@@ -76,4 +76,7 @@ Look at the modules under [prestashop-automation/lib/actions](https://github.com
 The database is saved before each test, then restored, so you can consider that each test runs in its own sandbox.
 
 ##Where to go next?
+###Improve the Framework!
 We want more primitives to build complex tests, please contribute to [prestashop-automation](https://github.com/djfm/prestashop-automation)!
+###Commit useful tests
+By default, the [prestashop-automation-tool-tests](https://github.com/djfm/prestashop-automation-tool-tests) repository is cloned into `tests-available`. The more tests, the happier we are. Please make pull requests!
