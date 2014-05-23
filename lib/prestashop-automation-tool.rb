@@ -8,6 +8,30 @@ module PrestaShopAutomationTool
 		File.expand_path '../..', __FILE__
 	end
 
+	def self.merge a, b
+		if a.is_a? Hash and b.is_a? Hash
+			merged = {}
+
+			a.each_pair do |ka, va|
+				if b.has_key? ka
+					merged[ka] = merge va, b[ka]
+				else
+					merged[ka] = va
+				end
+			end
+
+			b.each_pair do |kb, vb|
+				unless a.has_key? kb
+					merged[kb] = vb
+				end
+			end
+
+			return merged
+		else
+			return b
+		end
+	end
+
 	class ConfigurationParser
 
 		attr_reader :config

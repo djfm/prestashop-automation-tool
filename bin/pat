@@ -38,8 +38,11 @@ elsif ARGV[0] == 'init'
 	unless File.exists? 'tests-available'
 		`git clone #{conf.config[:tests_repository]} tests-available`
 	end
+	unless File.exists? 'tests-output'
+		Dir.mkdir 'tests-output'
+	end
 elsif ARGV[0] == 'purge'
-	`rm -Rf pat.conf.json tests-enabled tests-available`
+	`rm -Rf pat.conf.json tests-enabled tests-available tests-output`
 elsif ARGV[0] == 'install'
 	withConfig do |conf|
 		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
@@ -74,14 +77,29 @@ elsif ARGV[0] == 'test'
 	list.sort!
 
 	list.each do |file|
+
+		env = {
+			'PAT_NO_RESTORE' => (options[:no_restore] ? '1' : '0'),
+			'PAT_OUTPUT_PREFIX' => 'tests-output/' + File.basename(file, File.extname(file))
+		}
+
 		ok = if file =~ /\.rb$/
 			puts "Running #{file}..."
-			system({'NO_RESTORE' => options[:no_restore]}, 'rspec', file)
+			system(env, 'rspec', file)
 		elsif file =~ /\.json$/
 			puts "Running #{file}..."
 			data = JSON.parse File.read(file)
+
+			tempfile = nil
+			if base = data['spec']['extend']
+				baseData = JSON.parse File.read(File.join File.dirname(file), "#{base}.json")
+				data = PrestaShopAutomationTool.merge baseData, data
+				file = env['PAT_OUTPUT_PREFIX'] + '.json'
+				File.write file, JSON.pretty_generate(data)
+			end
+
 			runner = "pat-runner-#{data['spec']['runner']}.rb"
-			system({'PAT_SOURCE' => file, 'NO_RESTORE' => (options[:no_restore] ? '1' : '0')}, runner)
+			system(env.merge({'PAT_SOURCE' => file}), runner)
 		else
 			:not_runnable
 		end

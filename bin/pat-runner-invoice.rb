@@ -105,6 +105,6 @@ scenario = JSON.parse File.read(ENV['PAT_SOURCE'])
 
 describe 'Invoice test' do
 	it 'should work' do
-		test_invoice @shop, scenario, :dump_pdf_to => ENV['PAT_SOURCE'].sub(/\.json$/, '.pdf')
+		test_invoice @shop, scenario, :dump_pdf_to => (ENV['PAT_OUTPUT_PREFIX'] + '.pdf')
 	end
 end
