@@ -1,8 +1,25 @@
 #!/usr/bin/ruby
 
+require 'pry'
 require 'rspec'
 require 'rspec/autorun'
 require 'prestashop-automation-tool/helper'
+
+def compare expected, got, path=[]
+	differences = {}
+	if got.is_a? Hash and expected.is_a? Hash
+		expected.each_pair do |key, value|
+			pkey = key.to_s.include?(".") ? "\"#{key}\"" : key
+			differences.merge! compare(expected[key], got[key], path + [pkey])
+		end
+	else
+		if got != expected
+			#abort "#{path.join('.')} :: got #{got} instead of #{expected}"
+			differences[path.join('.')] = "got #{got} instead of #{expected}"
+		end
+	end
+	return differences
+end
 
 def test_invoice ps, scenario, options={}
 
@@ -78,26 +95,36 @@ def test_invoice ps, scenario, options={}
 	ps.goto_back_office
 	invoice = ps.validate_order :id => order_id, :dump_pdf_to => options[:dump_pdf_to], :get_invoice_json => true
 
-	if scenario['expect']['invoice']
-		if expected_total = scenario['expect']['invoice']['total']
-			actual_total = invoice['order']
-			mapping = {
-				'to_pay_tax_included' => 'total_paid_tax_incl',
-				'to_pay_tax_excluded' => 'total_paid_tax_excl',
-				'products_tax_included' => 'total_products_wt',
-				'products_tax_excluded' => 'total_products',
-				'shipping_tax_included' => 'total_shipping_tax_incl',
-				'shipping_tax_excluded' => 'total_shipping_tax_excl',
-				'discounts_tax_included' => 'total_discounts_tax_incl',
-				'discounts_tax_excluded' => 'total_discounts_tax_excl',
-				'wrapping_tax_included' => 'total_wrapping_tax_incl',
-				'wrapping_tax_excluded' => 'total_wrapping_tax_excl'
+	total_mapping = {
+		'to_pay_tax_included' => 'total_paid_tax_incl',
+		'to_pay_tax_excluded' => 'total_paid_tax_excl',
+		'products_tax_included' => 'total_products_wt',
+		'products_tax_excluded' => 'total_products',
+		'shipping_tax_included' => 'total_shipping_tax_incl',
+		'shipping_tax_excluded' => 'total_shipping_tax_excl',
+		'discounts_tax_included' => 'total_discounts_tax_incl',
+		'discounts_tax_excluded' => 'total_discounts_tax_excl',
+		'wrapping_tax_included' => 'total_wrapping_tax_incl',
+		'wrapping_tax_excluded' => 'total_wrapping_tax_excl'
+	}
+
+	got = {'invoice' => {
+			'total' => Hash[total_mapping.map do |to, from| [to, invoice['order'][from].to_f] end],
+			'tax' => {
+				'products' => Hash[invoice['tax_tab']['product_tax_breakdown'].map do |k,v|
+					[k.to_f.to_s, v['total_amount'].to_f]
+				end]
 			}
-			#puts invoice
-			expected_total.each_pair do |key, value_expected|
-				expect(actual_total[mapping[key]].to_f).to eq value_expected.to_f
-			end
-		end
+		}
+	}
+
+	expected = scenario['expect']
+
+	differences = compare(expected, got)
+
+	if not differences.empty?
+		File.write (options[:output_prefix] + '.failed.json'), JSON.pretty_generate(differences)
+		throw differences
 	end
 end
 
@@ -105,6 +132,6 @@ scenario = JSON.parse File.read(ENV['PAT_SOURCE'])
 
 describe 'Invoice test' do
 	it 'should work' do
-		test_invoice @shop, scenario, :dump_pdf_to => (ENV['PAT_OUTPUT_PREFIX'] + '.pdf')
+		test_invoice @shop, scenario, :dump_pdf_to => (ENV['PAT_OUTPUT_PREFIX'] + '.pdf'), :output_prefix => ENV['PAT_OUTPUT_PREFIX']
 	end
 end

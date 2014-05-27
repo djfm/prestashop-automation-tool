@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
 	s.homepage = 'https://github.com/djfm/prestashop-automation-tool'
 	s.license = 'OSL'
 	s.add_runtime_dependency 'prestashop-automation'
+	s.add_runtime_dependency 'pry'
 	s.add_runtime_dependency 'apache-vhosts-parser'
 	s.executables << 'pat'
 	s.executables << 'pat-runner-invoice.rb'

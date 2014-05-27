@@ -49,6 +49,12 @@ elsif ARGV[0] == 'install'
 		ps.drop_database
 		ps.install options
 	end
+elsif ARGV[0] == 'create' and ARGV[1] == 'tax' and ARGV[2] == 'group'
+	withConfig do |conf|
+		ps = PrestaShopAutomation::PrestaShop.new(conf[:shop])
+		ps.login_to_back_office
+		ps.create_tax_group_from_rate ARGV[3]
+	end
 elsif ARGV[0] == 'create'
 	if ARGV[1]
 		template = File.join PrestaShopAutomationTool.gem_root, 'lib', 'templates', 'sample_test.rb'
