@@ -125,8 +125,10 @@ elsif ARGV[0] == 'disable'
 	if ARGV[1]
 		`mv tests-enabled/#{ARGV[1]}.* tests-available/`
 	else
-		puts "Please also provide prefix!"
+		`mv tests-enabled/* tests-available/`
 	end
+elsif ARGV[0] == 'clean'
+	`rm tests-output/*`
 else
 	puts "Unknown command '#{ARGV[0]}'!"
 end
