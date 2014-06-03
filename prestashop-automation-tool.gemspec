@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
 	s.name = 'prestashop-automation-tool'
-	s.version = '0.5'
+	s.version = '0.6'
 	s.date = '2014-05-19'
 	s.description = "Automate prestashop."
 	s.summary = 'This tool helps you add selenium tests to an existing prestashop installation.'
